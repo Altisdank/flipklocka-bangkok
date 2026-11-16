@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d111a">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Live-nedräkning till avgången från Köpenhamn till Bangkok den 19 november kl. 13.50.">
+  <meta property="og:title" content="Flipklocka till Bangkok">
+  <meta property="og:description" content="Följ nedräkningen till avgången, sekund för sekund.">
+  <meta name="author" content="AltisDank">
+  <title>Flipklocka till Bangkok</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+:root {
+  color-scheme: dark;
+  --ivory: #faefd8;
+  --muted: #b7b8bb;
+  --amber: #ffc584;
+  --rule: #3b4250;
+  --board: #121824;
+  --mono: "IBM Plex Mono", ui-monospace, "DejaVu Sans Mono", monospace;
+  --display: "Barlow Condensed", "Arial Narrow", ui-sans-serif, sans-serif;
+  font-family: var(--mono);
+  color: var(--ivory);
+  background: #0d111a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  min-width: 256px;
+  min-height: 100vh;
+  min-height: 100svh;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  padding: clamp(12px, 4vw, 40px);
+  background:
+    radial-gradient(ellipse at 82% 87%, #241d22 0, transparent 52%),
+    radial-gradient(ellipse at 13% 8%, #1d293a 0, transparent 57%);
+}
+
+.board {
+  width: min(100%, 719px);
+  min-width: 0;
+  padding: clamp(19px, 5vw, 54px);
+  background: var(--board);
+  outline: 1px solid #4f5054;
+  border: 6px solid #272b34;
+  border-radius: 22px;
+  box-shadow: inset 0 0 0 1px #080b12, 0 14px 28px #0006;
+}
+
+.board-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: clamp(11px, 2vw, 18px);
+  border-bottom: 1px solid var(--rule);
+  font-size: clamp(.72rem, 1.8vw, .95rem);
+  letter-spacing: .09em;
+}
+
+.departure-tag {
+  color: var(--amber);
+  text-transform: uppercase;
+}
+
+.departure-tag::before {
+  content: "";
+  display: inline-block;
+  width: .46em;
+  height: .46em;
+  margin: 0 .66em .1em 0;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+h1 {
+  margin: clamp(10px, 2vw, 18px) 0 clamp(9px, 2vw, 17px);
+  color: var(--ivory);
+  font-family: var(--display);
+  font-size: clamp(2.5rem, 13.3vw, 7.5rem);
+  font-weight: 700;
+  line-height: .94;
+  letter-spacing: .005em;
+  text-transform: uppercase;
+}
+
+.route {
+  display: grid;
+  grid-template-columns: max-content 1fr max-content;
+  align-items: center;
+  gap: clamp(9px, 2.7vw, 25px);
+  margin-bottom: clamp(16px, 3vw, 27px);
+}
+
+.airport { display: grid; gap: 1px; }
+.airport:last-child { text-align: right; }
+.airport span { font-size: clamp(1.02rem, 3vw, 1.55rem); }
+.airport small { color: var(--muted); font-size: clamp(.52rem, 1.65vw, .7rem); text-transform: uppercase; }
+
+.route-line {
+  position: relative;
+  border-top: 2px dotted #c19162;
+  color: var(--amber);
+  text-align: center;
+}
+
+.route-line span {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -55%);
+  padding: 0 .38em;
+  background: var(--board);
+  font-size: clamp(1.02rem, 3.4vw, 1.7rem);
+  line-height: 1.08;
+}
+
+.clock {
+  padding: clamp(16px, 3.7vw, 30px) 0 clamp(20px, 4.4vw, 37px);
+  border-block: 1px solid var(--rule);
+  text-align: center;
+}
+
+h2, .footer-label {
+  margin: 0 0 clamp(11px, 2.5vw, 22px);
+  color: var(--amber);
+  font-size: clamp(.65rem, 1.9vw, .94rem);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+.groups {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(4px, 1.45vw, 13px);
+}
+
+.group {
+  display: grid;
+  gap: clamp(7px, 1.5vw, 11px);
+  align-content: start;
+  font-size: clamp(.53rem, 1.7vw, .71rem);
+  text-transform: uppercase;
+}
+
+.digits {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(2px, .42vw, 4px);
+}
+
+.digit {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  aspect-ratio: .64;
+  border-radius: clamp(3px, .8vw, 7px);
+  border: 1px solid #343e50;
+  box-shadow: 0 2px 3px #0009;
+  color: var(--ivory);
+  font-size: clamp(1rem, 6.25vw, 3.7rem);
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+  perspective: 200px;
+}
+
+.digit::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  inset: calc(50% - .5px) 0 auto;
+  height: clamp(1px, .3vw, 2px);
+  background: #0c1019;
+}
+
+.half {
+  position: absolute;
+  width: 100%;
+  height: 50%;
+  left: 0;
+  overflow: hidden;
+}
+
+.top { top: 0; background: linear-gradient(#2e3748, #252d3d); transform-origin: bottom center; }
+.bottom { bottom: 0; background: #202838; transform-origin: top center; }
+
+.glyph {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.top .glyph { top: 100%; }
+.bottom .glyph { top: 0; }
+
+.flap { visibility: hidden; z-index: 2; backface-visibility: hidden; }
+.flip .outgoing { animation: fold-top 125ms ease-in both; }
+.flip .incoming { animation: fold-bottom 165ms 125ms ease-out both; }
+
+@keyframes fold-top {
+  from { visibility: visible; transform: rotateX(0); }
+  to { visibility: visible; transform: rotateX(-90deg); }
+}
+@keyframes fold-bottom {
+  from { visibility: visible; transform: rotateX(90deg); }
+  to { visibility: visible; transform: rotateX(0); }
+}
+
+.board-footer {
+  text-align: center;
+  padding-top: clamp(16px, 3vw, 25px);
+}
+.footer-label { margin-bottom: 5px; }
+.board-footer time { font-size: clamp(1.18rem, 4vw, 2rem); font-weight: 600; }
+.zone, .share-status { color: var(--muted); font-size: .73rem; }
+.zone { margin: 6px 0 0; }
+
+#share {
+  min-height: 44px;
+  margin-top: clamp(9px, 2vw, 17px);
+  padding: 7px 16px;
+  border: 1px solid #565e6e;
+  border-radius: 6px;
+  color: var(--ivory);
+  background: transparent;
+  font: inherit;
+  font-size: .78rem;
+  cursor: pointer;
+}
+#share:hover { border-color: var(--amber); color: var(--amber); }
+#share:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; }
+.share-status { margin: 7px 0 0; min-height: 1.1em; }
+.share-status:empty { margin: 0; min-height: 0; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flip .outgoing, .flip .incoming { animation: none; }
+}
+.credit { position: absolute; bottom: 8px; right: 14px; color: var(--muted); font-size: .67rem; }
+body { position: relative; padding-bottom: max(30px, 4vw); }
+</style>
+</head>
+<body>
+  <main class="board">
+    <header class="board-header">
+      <span class="departure-tag">Utresa</span>
+      <time datetime="2026-11-19T13:50:00+01:00">19 NOV 2026</time>
+    </header>
+
+    <h1>Bangkok</h1>
+    <div class="route" aria-label="Köpenhamn till Bangkok">
+      <div class="airport" aria-hidden="true">
+        <span>CPH</span>
+        <small>Köpenhamn</small>
+      </div>
+      <div class="route-line" aria-hidden="true"><span>✈</span></div>
+      <div class="airport" aria-hidden="true">
+        <span>BKK</span>
+        <small>Bangkok</small>
+      </div>
+    </div>
+
+    <section class="clock" aria-labelledby="clock-heading">
+      <h2 id="clock-heading" role="status">Tid kvar till avgång</h2>
+      <div id="reading" class="clock-reading" role="timer" aria-live="off">
+        <span class="sr-only" id="accessible-time"></span>
+        <div class="groups" id="number-groups" aria-hidden="true">
+          <div class="group"><div class="digits" data-part="days"></div><span>Dagar</span></div>
+          <div class="group"><div class="digits" data-part="hours"></div><span>Timmar</span></div>
+          <div class="group"><div class="digits" data-part="minutes"></div><span>Minuter</span></div>
+          <div class="group"><div class="digits" data-part="seconds"></div><span>Sekunder</span></div>
+        </div>
+      </div>
+      <noscript><p>Aktivera JavaScript för att se den tickande klockan.</p></noscript>
+    </section>
+
+    <footer class="board-footer">
+      <p class="footer-label">Planerad avgång</p>
+      <time id="departure" datetime="2026-11-19T13:50:00+01:00">19 november · 13.50</time>
+      <p class="zone">Svensk och dansk tid</p>
+      <button type="button" id="share" hidden>Kopiera länk</button>
+      <p id="share-status" class="share-status" role="status"></p>
+    </footer>
+  </main>
+  <small class="credit">Skapad av AltisDank</small>
+
+  <template id="digit-template">
+    <span class="digit">
+      <span class="half top"><span class="glyph"></span></span>
+      <span class="half bottom"><span class="glyph"></span></span>
+      <span class="half top flap outgoing"><span class="glyph"></span></span>
+      <span class="half bottom flap incoming"><span class="glyph"></span></span>
+    </span>
+  </template>
+<script>
+(() => {
+  const departure = Date.parse(document.getElementById("departure").dateTime);
+  const heading = document.getElementById("clock-heading");
+  const accessibleTime = document.getElementById("accessible-time");
+  const template = document.getElementById("digit-template");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const labels = ["dagar", "timmar", "minuter", "sekunder"];
+  const tiles = Array.from(document.querySelectorAll("[data-part]")).flatMap((group) => {
+    return Array.from({ length: 2 }, () => {
+      const digit = template.content.firstElementChild.cloneNode(true);
+      group.append(digit);
+      const [top, bottom, outgoing, incoming] = digit.querySelectorAll(".glyph");
+      return { digit, top, bottom, outgoing, incoming, value: null };
+    });
+  });
+
+  let handle;
+  let previousSeconds;
+
+  function showTile(tile, value, animate) {
+    if (tile.value === value) return;
+    tile.digit.classList.remove("flip");
+    tile.top.textContent = value;
+    tile.bottom.textContent = value;
+    if (animate) {
+      tile.outgoing.textContent = tile.value;
+      tile.incoming.textContent = value;
+      tile.digit.classList.add("flip");
+    }
+    tile.value = value;
+  }
+
+  function update() {
+    window.clearTimeout(handle);
+    const delta = departure - Date.now();
+    const seconds = Math.max(0, Math.ceil(delta / 1000));
+    if (seconds !== previousSeconds) {
+      const parts = [
+        Math.floor(seconds / 86400),
+        Math.floor(seconds / 3600) % 24,
+        Math.floor(seconds / 60) % 60,
+        seconds % 60,
+      ];
+      const digits = parts.map(part => String(part).padStart(2, "0")).join("");
+      const animate = previousSeconds === seconds + 1 && !reduceMotion.matches;
+      tiles.forEach((tile, index) => showTile(tile, digits[index], animate));
+      accessibleTime.textContent = parts.map((part, index) => `${part} ${labels[index]}`).join(", ");
+      previousSeconds = seconds;
+    }
+    if (delta > 0) {
+      handle = window.setTimeout(update, (delta % 1000) || 1000);
+    } else {
+      heading.textContent = "Planerad avgångstid har passerat";
+    }
+  }
+
+  const share = document.getElementById("share");
+  const shareStatus = document.getElementById("share-status");
+  if (navigator.clipboard?.writeText) {
+    share.hidden = false;
+    share.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(location.href);
+        shareStatus.textContent = "Länken kopierad";
+      } catch {
+        shareStatus.textContent = "Kopiera länken från adressfältet.";
+      }
+    });
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") update();
+  });
+  window.addEventListener("pageshow", update);
+  update();
+})();
+</script>
+</body>
+</html>
